@@ -19,6 +19,7 @@ jobs:
       matrix:
         os: [windows-latest]
         node-version: [14]
+        test-categroy: [smoke, others, apim]
 
     runs-on: ${{ matrix.os }}
 
@@ -59,25 +60,22 @@ jobs:
             npm run setup
 
       - name: Package CLI and install
-        run: |
-          npm run package
-          npm pack
-          mv *.tgz teamsfx-cli.tgz
-          npm install -g teamsfx-cli.tgz
-        working-directory: packages/cli
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 10
+          retry_on: error
+          command: |
+            cd packages/cli
+            npm run package
+            npm pack
+            mv *.tgz teamsfx-cli.tgz
+            npm install -g teamsfx-cli.tgz
 
       - name: E2E Test clean
         run: |
           npx lerna run test:e2e:clean
 
-      - name: E2E Test Smoke Cases
+      - name: E2E Test Cases
         run: |
-          npx lerna run test:e2e:smoke
-
-      - name: E2E Test Other Cases
-        run: |
-          npx lerna run test:e2e:others
-
-      - name: E2E Test Apim Cases
-        run: |
-          npx lerna run test:e2e:apim
+          npx lerna run test:e2e:${{ matrix.test-categroy }}
