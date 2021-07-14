@@ -1,17 +1,4 @@
-import {BaseError} from '../src/base-error'
-import {checkEnvironment} from '../src/utils/check-env'
-import {WordsToList} from '../src/utils/words-to-list'
-
-test('fail to check environment', async () => {
-  try {
-    checkEnvironment()
-  } catch (error) {
-    expect(error).toBeInstanceOf(BaseError)
-    return
-  }
-
-  expect(false).toBe(true) // should not reach here.
-})
+import {WordsToList} from '../src/utils/wordsToList'
 
 test('WordsToList empty case', async () => {
   // Arrange

@@ -1,4 +1,4 @@
-import {ErrorType, BaseError} from './base-error'
+import {ErrorType, BaseError} from './baseError'
 import {ErrorNames, Suggestions} from './constant'
 
 export class InputsError extends BaseError {

@@ -1,37 +1,19 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 export class ActionInputs {
-  static readonly ProjectRoot: string = 'project-root'
-  static readonly OperationType: string = 'operation-type'
-  static readonly Capabilities: string = 'capabilities'
+  static readonly Command: string = 'command'
+  static readonly SubCommands: string = 'sub-commands'
 }
 
 export class ActionOutputs {
-  static readonly ConfigFilePath: string = 'config-file-path'
   static readonly SharepointPackagePath: string = 'sharepoint-package-path'
   static readonly PackageZipPath: string = 'package-zip-path'
 }
 
 export class Commands {
   static readonly TeamsfxCliVersion: string = '0.2.1'
-  static readonly NpmInstall: string = 'npm install'
-  static readonly NpmRunBuild: string = 'npm run build'
-  static readonly TeamsfxProvision = (
-    subscriptionId: string,
-    version = Commands.TeamsfxCliVersion
-  ): string =>
-    `npx @microsoft/teamsfx-cli@${version} provision --subscription ${subscriptionId}`
-  static readonly TeamsfxDeploy = (
-    version = Commands.TeamsfxCliVersion
-  ): string => `npx @microsoft/teamsfx-cli@${version} deploy`
-  static readonly TeamsfxBuild = (
-    version = Commands.TeamsfxCliVersion
-  ): string => `npx @microsoft/teamsfx-cli@${version} build`
-  static readonly TeamsfxValidate = (
-    version = Commands.TeamsfxCliVersion
-  ): string => `npx @microsoft/teamsfx-cli@${version} validate`
-  static readonly TeamsfxPublish = (
-    version = Commands.TeamsfxCliVersion
-  ): string => `npx @microsoft/teamsfx-cli@${version} publish`
+  static readonly TeamsfxCliName: string = 'teamsfx'
+  static readonly AddOptionPrefix = (optionName: string): string =>
+    `--${optionName}`
 }
 
 export class Pathes {
