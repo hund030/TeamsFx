@@ -93,6 +93,7 @@ import { ErrorHandlerMW } from "../../../core/middleware/errorHandler";
 import { hooks } from "@feathersjs/hooks/lib";
 import { Service, Container } from "typedi";
 import { REMOTE_MANIFEST } from "../../resource/appstudio/constants";
+import { generateArmTemplate } from "./arm";
 
 export type LoadedPlugin = Plugin;
 export type PluginsWithContext = [LoadedPlugin, PluginContext];
@@ -364,6 +365,8 @@ export class TeamsAppSolution implements Solution {
         }
       }
     }
+
+    await generateArmTemplate(ctx);
 
     return res;
   }

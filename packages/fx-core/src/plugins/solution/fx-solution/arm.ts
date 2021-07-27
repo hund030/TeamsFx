@@ -24,10 +24,6 @@ const bicepOrchestrationFileName = "main.bicep";
 const parameterTemplateFileName = "parameter.template.json";
 const solutionLevelParameters = `param resourceBaseName string\n`;
 
-function isArm(object: any): object is ArmResourcePlugin {
-  return "scaffoldArmTemplate" in object;
-}
-
 // Get ARM template content from each resource plugin and output to project folder
 export async function generateArmTemplate(ctx: SolutionContext): Promise<Result<any, FxError>> {
   const azureSolutionSettings = ctx.projectSettings?.solutionSettings as AzureSolutionSettings;
@@ -39,10 +35,10 @@ export async function generateArmTemplate(ctx: SolutionContext): Promise<Result<
   // Get bicep content from each resource plugin
   for (const plugin of plugins) {
     const pluginWithArm = plugin as Plugin & ArmResourcePlugin; // Temporary solution before adding it to teamsfx-api
-    if (pluginWithArm.scaffoldArmTemplate) {
+    if (pluginWithArm.generateArmTemplates) {
       // find method using method name
       const pluginContext = getPluginContext(ctx, pluginWithArm.name);
-      const result = (await pluginWithArm.scaffoldArmTemplate(pluginContext)) as Result<
+      const result = (await pluginWithArm.generateArmTemplates(pluginContext)) as Result<
         ScaffoldArmTemplateResult,
         FxError
       >;
@@ -69,6 +65,7 @@ export async function generateArmTemplate(ctx: SolutionContext): Promise<Result<
     const bicepOrchestrationFileContent =
       bicepOrchestrationTemplate.renderOrchestrationFileContent();
     const templateFolderPath = path.join(ctx.root, baseFolder, templateFolder);
+    await fs.ensureDir(templateFolderPath);
     await fs.writeFile(
       path.join(templateFolderPath, bicepOrchestrationFileName),
       bicepOrchestrationFileContent
@@ -82,6 +79,7 @@ export async function generateArmTemplate(ctx: SolutionContext): Promise<Result<
     // Output parameter file
     const parameterFileContent = bicepOrchestrationTemplate.getParameterFileContent();
     const parameterFolderPath = path.join(ctx.root, baseFolder, parameterFolder);
+    await fs.ensureDir(parameterFolderPath);
     await fs.writeFile(
       path.join(parameterFolderPath, parameterTemplateFileName),
       parameterFileContent
