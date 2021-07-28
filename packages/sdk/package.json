@@ -37,7 +37,8 @@
     "unit-test:node": "nyc mocha --no-timeouts -r test/mocha.env.ts --require ts-node/register \"test/unit/node/**/*.spec.ts\" \"test/unit/*.spec.ts\"",
     "test:unit": "npm run build:test && npm run unit-test:node && npm run unit-test:browser",
     "ui-test": "mocha --no-timeouts -r test/mocha.env.ts -r ts-node/register test/ui/**/*.spec.ts --exit",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "preversion": "node ../../templates/scripts/sync-up-version.js && git add ."
   },
   "files": [
     "dist/",

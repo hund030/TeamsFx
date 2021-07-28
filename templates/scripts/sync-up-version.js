@@ -3,18 +3,9 @@ var path = require("path");
 const loadJsonFile = require("load-json-file");
 const writePkg = require("write-pkg");
 const semver = require("semver");
-// git.diff('-- template/package.json', (res)=> {
-//   console.log(res);
-// });
 
 const sdk_version = require(path.join(__dirname, "../../packages/sdk/package.json")).version;
-const sdk_name = "@microsoft/teamsfx";
-
-if (sdk_version.includes("alpha")) {
-  version_type = false;
-} else if (sdk_version.includes("rc")) {
-  version_type = false;
-}
+const sdk_name = require(path.join(__dirname, "../../packages/sdk/package.json")).name;
 
 function listFile(dir, list = []) {
   var arr = fs.readdirSync(dir);
@@ -32,12 +23,12 @@ function listFile(dir, list = []) {
 }
 
 const template_dir = path.join(__dirname, "..");
-var dep_pkgs = listFile(template_dir);
+const dep_pkgs = listFile(template_dir);
 for (file of dep_pkgs) {
   let pkg_ = loadJsonFile.sync(file);
   let dep = pkg_.dependencies;
   if (dep) {
-    const dep_map = new Map(Object.entries(dep));
+    let dep_map = new Map(Object.entries(dep));
     if (dep_map.get(sdk_name)) {
       if (semver.prerelease(sdk_version)) {
         dep_map.set(sdk_name, sdk_version);

@@ -4,8 +4,7 @@
   "private": "true",
   "license": "MIT",
   "scripts": {
-    "precommit": "lint-staged",
-    "preversion": "node ./scripts/sync-up-version.js && git add ."
+    "precommit": "lint-staged"
   },
   "devDependencies": {
     "@shared/eslint-config": "file:../packages/eslint-config",
