@@ -16,6 +16,7 @@ import { format } from "util";
 import { compileHandlebarsTemplateString, getStrings } from "../../../common";
 import path from "path";
 import * as fs from "fs-extra";
+import { PluginNames } from "./constants";
 
 const baseFolder = "./infra/azure";
 const templateFolder = "templates";
@@ -217,6 +218,36 @@ interface PluginModuleProperties {
   Path: string;
 }
 
-function generateBicepModuleFilePath(moduleFileName: string) {
+function generateBicepModuleFilePath(moduleFileName: string): string {
   return `./${moduleFileName}.bicep`;
+}
+
+export function expandParameterPlaceholders(
+  ctx: SolutionContext,
+  parameterContent: string
+): string {
+  const azureSolutionSettings = ctx.projectSettings?.solutionSettings as AzureSolutionSettings;
+  const plugins = getActivatedResourcePlugins(azureSolutionSettings); // This function ensures return result won't be empty
+  const availableVariables: Record<string, string> = {};
+  // Add plugin contexts to available variables
+  for (const plugin of plugins) {
+    const pluginContext = getPluginContext(ctx, plugin.name);
+    for (const configItem of pluginContext.config) {
+      if (typeof configItem[1] === "string") {
+        // Currently we only config with string type
+        const variableName = `${normalizeToEnvName(plugin.name)}__${normalizeToEnvName(
+          configItem[0]
+        )}`;
+        availableVariables[variableName] = configItem[1];
+      }
+    }
+  }
+  // Add environment variable to available variables
+  Object.assign(availableVariables, process.env); // The environment variable has higher priority
+
+  return compileHandlebarsTemplateString(parameterContent, availableVariables);
+}
+
+function normalizeToEnvName(input: string): string {
+  return input.toUpperCase().replace(/-|\./, "_"); // replace "-" or "." to "_"
 }
