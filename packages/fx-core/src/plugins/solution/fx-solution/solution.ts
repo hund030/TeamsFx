@@ -92,6 +92,7 @@ import { AadAppForTeamsPlugin, AppStudioPlugin, SpfxPlugin } from "../../resourc
 import { ErrorHandlerMW } from "../../../core/middleware/errorHandler";
 import { hooks } from "@feathersjs/hooks/lib";
 import { Service, Container } from "typedi";
+import axios from "axios";
 
 export type LoadedPlugin = Plugin;
 export type PluginsWithContext = [LoadedPlugin, PluginContext];
@@ -447,19 +448,39 @@ export class TeamsAppSolution implements Solution {
     }
     const provisioned = this.checkWetherProvisionSucceeded(ctx.config);
     if (provisioned) {
-      const msg = util.format(
-        getStrings().solution.AlreadyProvisionNotice,
-        ctx.projectSettings?.appName
-      );
-      ctx.ui?.showMessage("warn", msg, false);
-      const pluginCtx = getPluginContext(ctx, this.AppStudioPlugin.name);
-      const remoteTeamsAppId = await this.AppStudioPlugin.provision(pluginCtx);
-      if (remoteTeamsAppId.isOk()) {
-        ctx.config.get(GLOBAL_CONFIG)?.set(REMOTE_TEAMS_APP_ID, remoteTeamsAppId.value);
-      } else {
-        return remoteTeamsAppId;
+      // const msg = util.format(
+      //   getStrings().solution.AlreadyProvisionNotice,
+      //   ctx.projectSettings?.appName
+      // );
+      // ctx.ui?.showMessage("warn", msg, false);
+      // const pluginCtx = getPluginContext(ctx, this.AppStudioPlugin.name);
+      // const remoteTeamsAppId = await this.AppStudioPlugin.provision(pluginCtx);
+      // if (remoteTeamsAppId.isOk()) {
+      //   ctx.config.get(GLOBAL_CONFIG)?.set(REMOTE_TEAMS_APP_ID, remoteTeamsAppId.value);
+      // } else {
+      //   return remoteTeamsAppId;
+      // }
+      // return await this.AppStudioPlugin.postProvision(pluginCtx);
+      const maybeSelectedPlugins = this.getSelectedPlugins(ctx);
+      if (maybeSelectedPlugins.isErr()) {
+        return maybeSelectedPlugins;
       }
-      return await this.AppStudioPlugin.postProvision(pluginCtx);
+      const selectedPlugins = maybeSelectedPlugins.value;
+      const aadPlugin = this.AadPlugin as AadAppForTeamsPlugin;
+      const appStudioPlugin = this.AppStudioPlugin as AppStudioPlugin;
+      const email = "creator@kenbwsong.onmicrosoft.com";
+      const graphToken = await ctx.graphTokenProvider?.getAccessToken();
+      const instance = axios.create({
+        baseURL: "https://graph.microsoft.com/v1.0",
+      });
+      instance.defaults.headers.common["Authorization"] = `Bearer ${graphToken}`;
+      const res = await instance.get(`https://graph.microsoft.com/v1.0/users`);
+      console.log(res);
+      if (selectedPlugins.some((plugin) => plugin.name === aadPlugin.name)) {
+        await aadPlugin.grantPermission(getPluginContext(ctx, aadPlugin.name));
+        await appStudioPlugin.grantPermission(getPluginContext(ctx, appStudioPlugin.name));
+        return ok(undefined);
+      }
     }
     try {
       // Just to trigger M365 login before the concurrent execution of provision.

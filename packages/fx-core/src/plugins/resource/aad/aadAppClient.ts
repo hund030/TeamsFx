@@ -211,6 +211,10 @@ export class AadAppClient {
     return config;
   }
 
+  public static async grantPermission(objectId: string, userObjectId: string): Promise<void> {
+    await GraphClient.grantPermission(TokenProvider.token as string, objectId, userObjectId);
+  }
+
   public static async retryHanlder(
     ctx: PluginContext,
     stage: string,

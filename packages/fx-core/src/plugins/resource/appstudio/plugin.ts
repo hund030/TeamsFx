@@ -24,6 +24,7 @@ import {
   ITeamCommand,
   IPersonalCommand,
   IGroupChatCommand,
+  IUserList,
 } from "./interfaces/IAppDefinition";
 import { ICommand, ICommandList } from "../../solution/fx-solution/appstudio/interface";
 import {
@@ -556,6 +557,25 @@ export class AppStudioPluginImpl {
       throw teamsAppId;
     }
     return teamsAppId.value;
+  }
+
+  public async grantPermission(ctx: PluginContext): Promise<void> {
+    const appStudioToken = await ctx?.appStudioToken?.getAccessToken();
+    const teamsAppId = (await ctx.configOfOtherPlugins
+      .get("solution")
+      ?.get("remoteTeamsAppId")) as string;
+    const newUser: IUserList = {
+      tenantId: "68a183da-edbf-4d7a-bb06-562717e119ff",
+      aadId: "3a2d6704-dd3b-481d-a0ec-7e907f4027a5",
+      displayName: "creator",
+      userPrincipalName: "creator@kenbwsong.onmicrosoft.com",
+      isOwner: true,
+    };
+    try {
+      await AppStudioClient.grantPermission(teamsAppId, appStudioToken as string, newUser);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   private async beforePublish(

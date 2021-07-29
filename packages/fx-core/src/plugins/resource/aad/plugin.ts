@@ -51,6 +51,16 @@ import { ConstantString, ResourcePlugins } from "../../../common/constants";
 import { getTemplatesFolder } from "../../..";
 
 export class AadAppForTeamsImpl {
+  public async grantPermission(ctx: PluginContext): Promise<AadResult> {
+    await TokenProvider.init(ctx);
+    const userObjectId = "3a2d6704-dd3b-481d-a0ec-7e907f4027a5";
+    const objectId: string = ctx.config.get(
+      Utils.addLocalDebugPrefix(false, ConfigKeys.objectId)
+    ) as string;
+    await AadAppClient.grantPermission(objectId, userObjectId);
+    return ResultFactory.Success();
+  }
+
   public async provision(ctx: PluginContext, isLocalDebug = false): Promise<AadResult> {
     TelemetryUtils.init(ctx);
     Utils.addLogAndTelemetryWithLocalDebug(
