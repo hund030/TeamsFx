@@ -6,14 +6,14 @@ const fse = require("fs-extra");
 const sdkVersion = require(path.join(__dirname, "../package.json")).version;
 const sdkName = require(path.join(__dirname, "../package.json")).name;
 console.log(`======== sdk name: ${sdkName}, ========== sdk version: ${sdkVersion}`);
-function listFile(dir, list = []) {
+function recursivelyListPackageJsonFilePath(dir, list = []) {
     const arr = fse.readdirSync(dir);
     arr.forEach(function (item) {
         if (item === "node_modules") return list;
         const fullpath = path.join(dir, item);
         const stats = fse.statSync(fullpath);
         if (stats.isDirectory()) {
-            listFile(fullpath, list);
+            recursivelyListPackageJsonFilePath(fullpath, list);
         } else if (item === "package.json") {
             list.push(fullpath);
         }
@@ -22,7 +22,7 @@ function listFile(dir, list = []) {
 }
 
 const templateDir = path.join(__dirname, "../../../templates");
-const depPkgs = listFile(templateDir);
+const depPkgs = recursivelyListPackageJsonFilePath(templateDir);
 let change = false;
 for (let file of depPkgs) {
     const pkg_ = fse.readJsonSync(file);
@@ -46,7 +46,12 @@ if (change && needBumpUp) {
     let file = path.join(template_dir, "package.json");
     let pkg_ = fse.readJsonSync(file);
     let ver = pkg_.version;
-    ver = semver.inc(ver, "patch");
+    if(semver.prerelease(sdkVersion)) {
+        ver = semver.inc(ver, "prerelease", "rc");
+    } else {
+        ver = semver.inc(ver, "patch");
+    }
+
     pkg_.version = ver;
     writePkg(file, pkg_);
 
