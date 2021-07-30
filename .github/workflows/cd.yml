@@ -87,7 +87,7 @@ jobs:
       - name: version rc npm packages to npmjs.org
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.inputs.preid == 'rc' && github.event.inputs.skip-version-rc == 'no'}}
         run: |
-          npx lerna version --conventional-commits --conventional-prerelease --preid=rc --no-changelog --yes
+          npx lerna version --conventional-commits --conventional-prerelease --preid=rc --no-changelog --ignore-scripts --yes
 
       - name: version stable npm packages to npmjs.org
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.inputs.preid == 'stable' }}
@@ -104,6 +104,11 @@ jobs:
           then
               git push -d origin $(git tag --points-at HEAD | grep templates | grep rc)
           fi
+            
+      - name: sync up templates deps with sdk version for RC
+        if: ${{ contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx') && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.event.inputs.preid == 'rc' }}
+        run: |
+          node ./templates/scripts/sync-up-version.js
 
       - name: update cli ai key
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && (github.event.inputs.preid == 'stable'||github.event.inputs.preid == 'rc') }}
@@ -138,11 +143,9 @@ jobs:
           npx lerna publish from-package --yes
 
       - name: Install Mustache
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') }}
         run: curl -sSL https://git.io/get-mo -o mo && chmod +x mo && sudo mv mo /usr/local/bin/
 
       - name: generate templates
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') }}
         run: .github/scripts/template-zip-autogen.sh
 
       - name: release templates' alpha version to github
