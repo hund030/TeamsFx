@@ -18,6 +18,7 @@ import {
   Stage,
   TokenProvider,
   Void,
+  v2,
 } from "@microsoft/teamsfx-api";
 import {
   BicepTemplate,
@@ -30,9 +31,14 @@ import {
   ResourceTemplate,
   SolutionInputs,
 } from "@microsoft/teamsfx-api/build/v2";
-import { CryptoDataMatchers, mapToJson } from "../../common/tools";
-import { ArmResourcePlugin, ScaffoldArmTemplateResult } from "../../common/armInterface";
-import { InvalidStateError, NoProjectOpenedError, PluginHasNoTaskImpl } from "../../core/error";
+import { CryptoDataMatchers, isMultiEnvEnabled, mapToJson } from "../../common/tools";
+import { ArmTemplateResult } from "../../common/armInterface";
+import {
+  InvalidStateError,
+  MultipleEnvNotEnabledError,
+  NoProjectOpenedError,
+  PluginHasNoTaskImpl,
+} from "../../core/error";
 import { newEnvInfo } from "../../core/tools";
 import { GLOBAL_CONFIG } from "../solution/fx-solution/constants";
 
@@ -64,7 +70,7 @@ export function convert2PluginContext(
 export async function scaffoldSourceCodeAdapter(
   ctx: Context,
   inputs: Inputs,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<Void, FxError>> {
   if (!plugin.scaffold && !plugin.postScaffold)
     return err(PluginHasNoTaskImpl(plugin.displayName, "scaffold"));
@@ -99,7 +105,7 @@ export async function scaffoldSourceCodeAdapter(
 export async function generateResourceTemplateAdapter(
   ctx: Context,
   inputs: Inputs,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<ResourceTemplate, FxError>> {
   if (!plugin.generateArmTemplates)
     return err(PluginHasNoTaskImpl(plugin.displayName, "generateArmTemplates"));
@@ -108,7 +114,7 @@ export async function generateResourceTemplateAdapter(
   if (armRes.isErr()) {
     return err(armRes.error);
   }
-  const output: ScaffoldArmTemplateResult = armRes.value as ScaffoldArmTemplateResult;
+  const output: ArmTemplateResult = armRes.value as ArmTemplateResult;
   const bicepTemplate: BicepTemplate = { kind: "bicep", template: output };
   return ok(bicepTemplate);
 }
@@ -195,7 +201,7 @@ export async function configureResourceAdapter(
   inputs: ProvisionInputs,
   envInfo: Readonly<EnvInfoV2>,
   tokenProvider: TokenProvider,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<ResourceProvisionOutput, FxError>> {
   if (!plugin.postProvision) return err(PluginHasNoTaskImpl(plugin.displayName, "postProvision"));
   const pluginContext: PluginContext = convert2PluginContext(plugin.name, ctx, inputs);
@@ -224,7 +230,7 @@ export async function deployAdapter(
   inputs: DeploymentInputs,
   provisionOutput: Json,
   tokenProvider: AzureAccountProvider,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<Void, FxError>> {
   if (!plugin.deploy) return err(PluginHasNoTaskImpl(plugin.displayName, "deploy"));
   const pluginContext: PluginContext = convert2PluginContext(plugin.name, ctx, inputs);
@@ -255,7 +261,7 @@ export async function provisionLocalResourceAdapter(
   inputs: Inputs,
   localSettings: Json,
   tokenProvider: TokenProvider,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<Json, FxError>> {
   if (!plugin.localDebug) return err(PluginHasNoTaskImpl(plugin.displayName, "localDebug"));
   const pluginContext: PluginContext = convert2PluginContext(plugin.name, ctx, inputs);
@@ -277,7 +283,7 @@ export async function configureLocalResourceAdapter(
   inputs: Inputs,
   localSettings: Json,
   tokenProvider: TokenProvider,
-  plugin: Plugin & ArmResourcePlugin
+  plugin: Plugin
 ): Promise<Result<Json, FxError>> {
   if (!plugin.postLocalDebug) return err(PluginHasNoTaskImpl(plugin.displayName, "postLocalDebug"));
   const pluginContext: PluginContext = convert2PluginContext(plugin.name, ctx, inputs);
@@ -434,4 +440,37 @@ export function setLocalSettingsV1(pluginContext: PluginContext, localSettings: 
     bot: ConfigMap.fromJSON(localSettings.bot),
     frontend: ConfigMap.fromJSON(localSettings.frontend),
   };
+}
+
+export async function collaborationApiAdaptor(
+  ctx: Context,
+  inputs: v2.InputsWithProjectPath,
+  envInfo: DeepReadonly<EnvInfoV2>,
+  tokenProvider: TokenProvider,
+  userInfo: Json,
+  plugin: Plugin,
+  taskName: "grantPermission" | "listCollaborator" | "checkPermission"
+): Promise<Result<Json, FxError>> {
+  // API v2 only works with multiple env enabled
+  if (!isMultiEnvEnabled()) {
+    return err(MultipleEnvNotEnabledError());
+  }
+  const fn = plugin[taskName];
+  if (!fn) {
+    return err(PluginHasNoTaskImpl(plugin.displayName, taskName));
+  }
+
+  const state: ConfigMap | undefined = ConfigMap.fromJSON(envInfo.state);
+  if (!state) {
+    return err(InvalidStateError(plugin.name, envInfo.state));
+  }
+  const pluginContext: PluginContext = convert2PluginContext(plugin.name, ctx, inputs);
+  pluginContext.azureAccountProvider = tokenProvider.azureAccountProvider;
+  pluginContext.appStudioToken = tokenProvider.appStudioToken;
+  pluginContext.graphTokenProvider = tokenProvider.graphTokenProvider;
+  pluginContext.envInfo = newEnvInfo();
+  pluginContext.envInfo.state = flattenConfigMap(state);
+  pluginContext.envInfo.config = envInfo.config as EnvConfig;
+  pluginContext.config = pluginContext.envInfo.state.get(plugin.name) ?? new ConfigMap();
+  return fn.bind(plugin)(pluginContext, userInfo);
 }
