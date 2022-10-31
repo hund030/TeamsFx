@@ -51,6 +51,10 @@
         "notification-timer-trigger",
         "notification-restify",
         "command-and-response",
+        "dummy-default-bot",
+        "dummy-workflow-bot",
+        "dummy-message-extension",
+        "dummy-m365-bot",
         "m365-tab",
         "sso-tab",
         "non-sso-tab"
