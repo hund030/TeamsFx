@@ -6,7 +6,7 @@ on:
       preid:
         description: "preid name(alpha, beta, rc, stable)"
         required: true
-        default: "rc"
+        default: "alpha"
       skip-version-rc:
         description: "release RC version just with lerna publish, skip run lerna version(yes or no)"
         required: false
@@ -14,6 +14,7 @@ on:
       pkgs:
         type: string
         required: false
+        default: "template"
         description: "Please enter the package names you want to publish, such as cli, vscode, sdk, server and template. Please separate multiple entries with spaces"
   schedule:
     - cron: "0 8 * * *"
