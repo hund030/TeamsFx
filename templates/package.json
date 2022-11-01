@@ -57,7 +57,10 @@
         "dummy-m365-bot",
         "m365-tab",
         "sso-tab",
-        "non-sso-tab"
+        "non-sso-tab",
+        "js",
+        "ts",
+        "csharp"
     ],
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^4.19.0",
