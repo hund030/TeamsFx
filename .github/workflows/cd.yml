@@ -53,10 +53,6 @@ jobs:
           git config --global user.name 'zhihuan'
           git config --global user.email 'zhihuan@microsoft.com'
 
-      - name: generate templates
-        run: |
-          .github/scripts/template-zip-autogen.sh ${{ runner.temp }}/teamsfx_templates
-
       - name: generate templates v3
         run: |
           .github/scripts/template-zip-autogen-v3.sh ${{ runner.temp }}/teamsfx_templates_v3
@@ -74,6 +70,6 @@ jobs:
           token: ${{ secrets.CD_PAT }}
           prerelease: true
           tag: "templates-0.0.0-alpha"
-          artifacts: ${{ runner.temp }}/teamsfx_templates/*.zip, ${{ runner.temp }}/teamsfx_templates_v3/*.zip
+          artifacts:  ${{ runner.temp }}/teamsfx_templates_v3/*.zip
           allowUpdates: true
           removeArtifacts: true
