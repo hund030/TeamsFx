@@ -15,7 +15,7 @@ mkdir -p ${TEMPLATE_OUTPUT_DIR}
 
 TEMPLATE_BASE_DIR="./templates/scenarios"
 cd ${TEMPLATE_BASE_DIR}
-TEMPLATE_NAMES=$(ls -d ./*/)
+TEMPLATE_NAMES=$(ls -d */)
 cd -
 
 for TEMPLATE_NAME in ${TEMPLATE_NAMES[@]}; do
