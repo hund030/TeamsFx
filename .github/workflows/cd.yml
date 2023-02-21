@@ -217,7 +217,7 @@ jobs:
         run: |
           npx lerna publish from-package --dist-tag=alpha --yes --allow-branch ${GITHUB_REF#refs/*/}
         env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
+          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3;${{ runner.temp }}/teamsfx_templates
 
       - name: update cli ai key
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
@@ -246,14 +246,14 @@ jobs:
         run: |
           npx lerna publish from-package --dist-tag=rc --yes
         env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
+          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3;${{ runner.temp }}/teamsfx_templates
 
       - name: publish stable npm packages to npmjs.org
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
         run: |
           npx lerna publish from-package --yes
         env:
-          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3
+          TEMPLATE_PATH: ${{ runner.temp }}/teamsfx_templates_v3;${{ runner.temp }}/teamsfx_templates
 
       - name: pack server bits
         if: ${{ contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx-server') }}

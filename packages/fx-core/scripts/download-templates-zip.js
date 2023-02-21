@@ -117,8 +117,10 @@ async function selectVersionFromRemoteTagList() {
 }
 
 async function copyTemplateFromLocal(templatePath) {
-  console.log(`Start to copy templates from ${templatePath} to ${fallbackPath}`);
-  fs.copySync(templatePath, fallbackPath);
+  templatePath.split(";").forEach((path) => {
+    console.log(`Start to copy templates from ${path} to ${fallbackPath}`);
+    fs.copySync(path, fallbackPath);
+  });
 }
 
 async function main() {
