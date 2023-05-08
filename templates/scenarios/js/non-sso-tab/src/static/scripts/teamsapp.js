@@ -14,5 +14,6 @@
     if (hubName) {
       document.getElementById("hubName").innerHTML = hubName;
     }
+    document.getElementById("hubName").innerHTML = "unknown platform";
   }
 })();
