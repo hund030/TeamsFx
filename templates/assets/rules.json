@@ -1,0 +1,19 @@
+{
+  "extensions.json": {
+    "path": "/",
+    "templates": ["js/*", "ts/*"]
+  },
+  "tsconfig.json": {
+    "path": "/",
+    "templates": [
+      "ts/command-and-response",
+      "ts/default-bot",
+      "ts/default-bot-message-extension",
+      "ts/link-unfurling",
+      "ts/m365-message-extension",
+      "ts/message-extension",
+      "ts/notification-restify",
+      "ts/workflow"
+    ]
+  }
+}
