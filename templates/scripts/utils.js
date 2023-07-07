@@ -20,7 +20,6 @@ function escapeEmptyVariable(template, view, tags = ["{{", "}}"]) {
   const parsed = Mustache.parse(template, tags);
   let tokens = JSON.parse(JSON.stringify(parsed)); // deep copy
   let shift = 0;
-  let cachedFuncName = [];
   for (const v of tokens) {
     v[2] += shift;
     if (v[0] === "name" && !view[v[1]]) {
@@ -28,20 +27,6 @@ function escapeEmptyVariable(template, view, tags = ["{{", "}}"]) {
       v[1] = tags[0] + v[1] + tags[1];
       shift += 4;
     }
-
-    if (v[0] === "#" && !cachedFuncName.includes(v[1])) {
-      cachedFuncName.push(v[1]);
-      const yml = `${view[v[1]]}`;
-      view[v[1]] = function () {
-        return function (text, render) {
-          if (text.includes(":")) {
-            return Mustache.render(yml, strToObj(text)).trimEnd();
-          }
-          return Mustache.render(yml, { [text.trim()]: true }).trimEnd();
-        };
-      };
-    }
-
     v[3] += shift;
   }
   return tokens;
