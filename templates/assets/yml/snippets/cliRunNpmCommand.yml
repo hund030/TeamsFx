@@ -1,0 +1,13 @@
+  {{#install}}
+  # Run npm command
+  - uses: cli/runNpmCommand
+    name: install dependencies
+    with:
+      args: install
+  {{/install}}
+  {{#build}}
+  - uses: cli/runNpmCommand
+    name: build app
+    with:
+      args: run build --if-present
+  {{/build}}

@@ -1,13 +1,14 @@
 const path = require("path");
 const fs = require("fs-extra");
+const Mustache = require("mustache");
 
-function getFiles(dir, fileList = [], filter = (file) => true) {
+function filterFiles(dir, fileList = [], filter = () => true) {
   const files = fs.readdirSync(dir);
   files.forEach((file) => {
     const filePath = path.join(dir, file);
     const stat = fs.lstatSync(filePath);
     if (stat.isDirectory()) {
-      fileList = getFiles(filePath, fileList, filter);
+      fileList = filterFiles(filePath, fileList, filter);
     } else if (filter(file)) {
       fileList.push(filePath);
     }
@@ -15,6 +16,44 @@ function getFiles(dir, fileList = [], filter = (file) => true) {
   return fileList;
 }
 
+function escapeEmptyVariable(template, view, tags = ["{{", "}}"]) {
+  const parsed = Mustache.parse(template, tags);
+  let tokens = JSON.parse(JSON.stringify(parsed)); // deep copy
+  let shift = 0;
+  let cachedFuncName = [];
+  for (const v of tokens) {
+    v[2] += shift;
+    if (v[0] === "name" && !view[v[1]]) {
+      v[0] = "text";
+      v[1] = tags[0] + v[1] + tags[1];
+      shift += 4;
+    }
+
+    if (v[0] === "#" && !cachedFuncName.includes(v[1])) {
+      cachedFuncName.push(v[1]);
+      const yml = `${view[v[1]]}`;
+      view[v[1]] = function () {
+        return function (text, render) {
+          if (text.includes(":")) {
+            return Mustache.render(yml, strToObj(text)).trimEnd();
+          }
+          return Mustache.render(yml, { [text.trim()]: true }).trimEnd();
+        };
+      };
+    }
+
+    v[3] += shift;
+  }
+  return tokens;
+}
+
+function renderMustache(template, view) {
+  const token = escapeEmptyVariable(template, view);
+  const writer = new Mustache.Writer();
+  return writer.renderTokens(token, new Mustache.Context(view), undefined, template);
+}
+
 module.exports = {
-  getFiles,
+  filterFiles,
+  renderMustache,
 };

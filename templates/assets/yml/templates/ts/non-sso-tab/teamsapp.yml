@@ -1,19 +1,26 @@
 {{{header}}}
 
+environmentFolderPath: ./env
+
+# Triggered when 'teamsfx provision' is executed
 provision:
 {{{teamsAppCreate}}}
+
 {{{armDeploy}}}
+
 {{{teamsAppValidateManifest}}}
 {{{teamsAppZipAppPackage}}}
 {{{teamsAppValidateAppPackage}}}
 {{{teamsAppUpdate}}}
 {{{teamsAppExtendToM365}}}
 
+# Triggered when 'teamsfx deploy' is executed
 deploy:
-{{{cliRunNpmCommand}}}
-{{{cliRunNpmCommand}}}
+{{#cliRunNpmCommand}} install {{/cliRunNpmCommand}}
+{{#cliRunNpmCommand}} build {{/cliRunNpmCommand}}
 {{{azureAppServiceZipDeploy}}}
 
+# Triggered when 'teamsfx publish' is executed
 publish:
 {{{teamsAppValidateManifest}}}
 {{{teamsAppZipAppPackage}}}

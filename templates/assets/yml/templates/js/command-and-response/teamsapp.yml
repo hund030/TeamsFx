@@ -1,0 +1,30 @@
+{{{header}}}
+
+environmentFolderPath: ./env
+
+# Triggered when 'teamsfx provision' is executed
+provision:
+{{{teamsAppCreate}}}
+
+{{{botAadAppCreate}}}
+
+{{{armDeploy}}}
+
+{{{teamsAppValidateManifest}}}
+{{{teamsAppZipAppPackage}}}
+{{{teamsAppValidateAppPackage}}}
+{{{teamsAppUpdate}}}
+
+# Triggered when 'teamsfx deploy' is executed
+deploy:
+{{{#cliRunNpmCommand}}} install {{{/cliRunNpmCommand}}}
+{{{#cliRunNpmCommand}}} build {{{/cliRunNpmCommand}}}
+{{{azureAppServiceZipDeploy}}}
+
+# Triggered when 'teamsfx publish' is executed
+publish:
+{{{teamsAppValidateManifest}}}
+{{{teamsAppZipAppPackage}}}
+{{{teamsAppValidateAppPackage}}}
+{{{teamsAppUpdate}}}
+{{{teamsAppPublishAppPackage}}}
