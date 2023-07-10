@@ -4,7 +4,7 @@ const utils = require("./utils");
 
 // yml template folders
 const ymlTemplateFolders = ["js", "ts", "csharp"].map((folder) =>
-  path.resolve(__dirname, "..", "assets", "yml", "templates", folder)
+  path.resolve(__dirname, "..", "constraints", "yml", "templates", folder)
 );
 
 function filterYmlFiles(dir, fileList = []) {
@@ -83,7 +83,7 @@ function getYmlFilesAsMustache(dir) {
 parseInput().map((file) => {
   const template = fs.readFileSync(file);
   const variables = getYmlFilesAsMustache(
-    path.resolve(__dirname, "..", "assets", "yml", "snippets")
+    path.resolve(__dirname, "..", "constraints", "yml", "snippets")
   );
   const result = utils.renderMustache(template.toString(), variables);
   const ymlFileName = path.basename(file, ".mustache") + ".yml.tpl";

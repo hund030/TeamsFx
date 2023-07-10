@@ -11,7 +11,7 @@ async function copyFileToDirectories(filePath, directories, targetPath) {
 async function main() {
   const assetPath = path.resolve(argv[2]);
 
-  const rulePath = path.resolve(__dirname, "..", "assets", "rules.json");
+  const rulePath = path.resolve(__dirname, "..", "constraints", "rules.json");
   const rules = await fs.readJSON(rulePath);
   const rule = rules[path.basename(assetPath)];
   if (!rule) {
