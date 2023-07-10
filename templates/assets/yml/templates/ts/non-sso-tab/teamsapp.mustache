@@ -6,7 +6,7 @@ environmentFolderPath: ./env
 provision:
 {{{teamsAppCreate}}}
 
-{{{armDeploy}}}
+{{#armDeploy}} deploymentName: Create-resources-for-tab {{/armDeploy}}
 
 {{{teamsAppValidateManifest}}}
 {{{teamsAppZipAppPackage}}}
@@ -18,7 +18,7 @@ provision:
 deploy:
 {{#cliRunNpmCommand}} install {{/cliRunNpmCommand}}
 {{#cliRunNpmCommand}} build {{/cliRunNpmCommand}}
-{{{azureAppServiceZipDeploy}}}
+{{#azureAppServiceZipDeploy}} resourceId: ${{TAB_AZURE_APP_SERVICE_RESOURCE_ID}} {{/azureAppServiceZipDeploy}}
 
 # Triggered when 'teamsfx publish' is executed
 publish:
