@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=https://aka.ms/teams-toolkit/1.0.0/yaml.schema.json
+# Visit https://aka.ms/teamsfx-v5.0-guide for details on this file
+# Visit https://aka.ms/teamsfx-actions for details on actions
 version: 1.0.0
 
 environmentFolderPath: ./env
@@ -120,17 +122,18 @@ provision:
 deploy:
   # Run npm command
   - uses: cli/runNpmCommand
+    name: install dependencies
     with:
       args: install
-  # Run npm command
   - uses: cli/runNpmCommand
+    name: build app
+    with:
+      args: run build --if-present
     env:
       REACT_APP_CLIENT_ID: ${{AAD_APP_CLIENT_ID}}
       REACT_APP_START_LOGIN_PAGE_URL: ${{TAB_ENDPOINT}}/auth-start.html
       REACT_APP_FUNC_NAME: getUserProfile
       REACT_APP_FUNC_ENDPOINT: ${{API_FUNCTION_ENDPOINT}}
-    with:
-      args: run build --if-present
   # Deploy bits to Azure Storage Static Website
   - uses: azureStorage/deploy
     with:
@@ -140,11 +143,12 @@ deploy:
       resourceId: ${{TAB_AZURE_STORAGE_RESOURCE_ID}}
   # Run npm command
   - uses: cli/runNpmCommand
+    name: install dependencies
     with:
       workingDirectory: api
       args: install
-  # Run npm command
   - uses: cli/runNpmCommand
+    name: build app
     with:
       workingDirectory: api
       args: run build --if-present
@@ -180,6 +184,7 @@ publish:
     with:
       # Path to manifest template
       manifestPath: ./appPackage/manifest.json
+  # Build Teams app package with latest env value
   - uses: teamsApp/zipAppPackage
     with:
       # Path to manifest template

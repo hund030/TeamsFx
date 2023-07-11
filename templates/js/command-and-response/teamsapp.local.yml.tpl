@@ -23,7 +23,7 @@ provision:
       # The Azure Active Directory application's client id created for bot.
       botId: BOT_ID
       # The Azure Active Directory application's client secret created for bot.
-      botPassword: SECRET_BOT_PASSWORD 
+      botPassword: SECRET_BOT_PASSWORD
 
   # Create or update the bot registration on dev.botframework.com
   - uses: botFramework/create

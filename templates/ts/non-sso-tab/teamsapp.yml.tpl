@@ -109,6 +109,7 @@ publish:
     with:
       # Path to manifest template
       manifestPath: ./appPackage/manifest.json
+  # Build Teams app package with latest env value
   - uses: teamsApp/zipAppPackage
     with:
       # Path to manifest template
@@ -137,4 +138,3 @@ publish:
     # the specified environment variable(s).
     writeToEnvironmentFile:
       publishedAppId: TEAMS_APP_PUBLISHED_APP_ID
-
