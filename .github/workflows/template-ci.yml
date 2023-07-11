@@ -1,0 +1,46 @@
+name: template CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - templates/**
+  workflow_dispatch:
+
+jobs:
+  verify-template-constraints:
+    name: Verify template constraints
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [14]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup project
+        run: |
+          npm install
+        working-directory: ./templates
+
+      # https://github.com/ryanclark/karma-webpack/issues/494
+      - name: Windows temp dir fix
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo TEMP="D:\Temp" >> $env:GITHUB_ENV
+          echo TMP="D:\Temp" >> $env:GITHUB_ENV
+
+      - name: Unit Test
+        run: |
+          npm run verify
+        working-directory: ./templates
