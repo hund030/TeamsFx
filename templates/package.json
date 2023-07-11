@@ -6,6 +6,7 @@
     "scripts": {
         "check-sensitive": "npx eslint --plugin 'no-secrets' --cache --ignore-pattern 'package.json' --ignore-pattern 'package-lock.json'",
         "precommit": "npm run check-sensitive && lint-staged",
+        "verify": "node ./scripts/verify.js",
         "version": "bash ../.github/scripts/pkg-version.sh template-sync && bash ../.github/scripts/pkg-version.sh core-template"
     },
     "templates": [
