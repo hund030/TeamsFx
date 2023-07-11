@@ -40,7 +40,7 @@ provision:
       name: {{appName}}-${{TEAMSFX_ENV}}
     # Write the information of created resources into environment file for
     # the specified environment variable(s).
-    writeToEnvironmentFile: 
+    writeToEnvironmentFile:
       teamsAppId: TEAMS_APP_ID
 
   - uses: arm/deploy  # Deploy given ARM templates parallelly.
@@ -145,7 +145,6 @@ deploy:
   - uses: cli/runNpmCommand
     name: install dependencies
     with:
-      workingDirectory: api
       args: install
   - uses: cli/runNpmCommand
     name: build app
