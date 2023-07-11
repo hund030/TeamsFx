@@ -30,10 +30,8 @@ deploy:
       REACT_APP_FUNC_NAME: getUserProfile
       REACT_APP_FUNC_ENDPOINT: ${{API_FUNCTION_ENDPOINT}}
 {{{azureStorageDeploy}}}
-{{#cliRunNpmCommand}} install {{/cliRunNpmCommand}}
-      workingDirectory: api
-{{#cliRunNpmCommand}} build {{/cliRunNpmCommand}}
-      workingDirectory: api
+{{#cliRunNpmCommand}} install, workingDirectory: api {{/cliRunNpmCommand}}
+{{#cliRunNpmCommand}} build, workingDirectory: api {{/cliRunNpmCommand}}
 {{#devToolInstall}} dotnet {{/devToolInstall}}
   - uses: cli/runDotnetCommand
     with:

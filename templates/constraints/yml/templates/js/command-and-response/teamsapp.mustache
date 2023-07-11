@@ -8,7 +8,7 @@ provision:
 
 {{{botAadAppCreate}}}
 
-{{{armDeploy}}}
+{{#armDeploy}} deploymentName: Create-resources-for-bot {{/armDeploy}}
 
 {{{teamsAppValidateManifest}}}
 {{{teamsAppZipAppPackage}}}
@@ -17,9 +17,8 @@ provision:
 
 # Triggered when 'teamsfx deploy' is executed
 deploy:
-{{{#cliRunNpmCommand}}} install {{{/cliRunNpmCommand}}}
-{{{#cliRunNpmCommand}}} build {{{/cliRunNpmCommand}}}
-{{{azureAppServiceZipDeploy}}}
+{{#cliRunNpmCommand}} install {{/cliRunNpmCommand}} --production
+{{#azureAppServiceZipDeploy}} resourceId: ${{BOT_AZURE_APP_SERVICE_RESOURCE_ID}} {{/azureAppServiceZipDeploy}}
 
 # Triggered when 'teamsfx publish' is executed
 publish:

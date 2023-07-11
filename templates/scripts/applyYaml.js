@@ -32,7 +32,7 @@ function parseInput() {
   }
   // input is a folder, return all mustache files in folder
   if (fs.lstatSync(mustachePath).isDirectory()) {
-    return filterYmlFiles(mustachePath);
+    return filterMustacheFiles(mustachePath);
   }
   if (!mustachePath.endsWith(".mustache")) {
     throw new Error("Invalid mustache file path");
@@ -45,11 +45,15 @@ function parseInput() {
 }
 
 function strToObj(str) {
-  var properties = str.split(";");
+  var properties = str.split(",");
   var obj = {};
   properties.forEach(function (property) {
-    var tup = property.split(":");
-    obj[tup[0].trim()] = tup[1].trim();
+    if (property.includes(":")) {
+      var tup = property.split(":");
+      obj[tup[0].trim()] = tup[1].trim();
+    } else {
+      obj[property.trim()] = true;
+    }
   });
   return obj;
 }
@@ -68,10 +72,7 @@ function getYmlFilesAsMustache(dir) {
       ...{
         [path.basename(file, ".mustache")]: function () {
           return function (text, render) {
-            if (text.includes(":")) {
-              return utils.renderMustache(mustache, strToObj(text)).trimEnd();
-            }
-            return utils.renderMustache(mustache, { [text.trim()]: true }).trimEnd();
+            return utils.renderMustache(mustache, strToObj(text)).trimEnd();
           };
         },
       },

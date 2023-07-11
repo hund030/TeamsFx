@@ -19,15 +19,11 @@ function filterFiles(dir, fileList = [], filter = () => true) {
 function escapeEmptyVariable(template, view, tags = ["{{", "}}"]) {
   const parsed = Mustache.parse(template, tags);
   let tokens = JSON.parse(JSON.stringify(parsed)); // deep copy
-  let shift = 0;
   for (const v of tokens) {
-    v[2] += shift;
     if (v[0] === "name" && !view[v[1]]) {
       v[0] = "text";
       v[1] = tags[0] + v[1] + tags[1];
-      shift += 4;
     }
-    v[3] += shift;
   }
   return tokens;
 }
