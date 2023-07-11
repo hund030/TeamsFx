@@ -1,0 +1,7 @@
+  # Deploy bits to Azure Storage Static Website
+  - uses: azureStorage/deploy
+    with:
+      # Deploy base folder. This folder includes manifest files for AAD app and Teams app that should be ignored using the ignoreFile.
+      artifactFolder: build
+      # The resource id of the cloud resource to be deployed to
+      resourceId: ${{TAB_AZURE_STORAGE_RESOURCE_ID}}

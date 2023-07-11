@@ -1,0 +1,49 @@
+{{{header}}}
+
+environmentFolderPath: ./env
+
+# Triggered when 'teamsfx provision' is executed
+provision:
+{{{aadAppCreate}}}
+
+{{{teamsAppCreate}}}
+
+{{#armDeploy}} deploymentName: Create-resources-for-tab {{/armDeploy}}
+
+{{{azureStorageEnableStaticWebsite}}}
+
+{{{aadAppUpdate}}}
+
+{{{teamsAppValidateManifest}}}
+{{{teamsAppZipAppPackage}}}
+{{{teamsAppValidateAppPackage}}}
+{{{teamsAppUpdate}}}
+{{{teamsAppExtendToM365}}}
+
+# Triggered when 'teamsfx deploy' is executed
+deploy:
+{{#cliRunNpmCommand}} install {{/cliRunNpmCommand}}
+{{#cliRunNpmCommand}} build {{/cliRunNpmCommand}}
+    env:
+      REACT_APP_CLIENT_ID: ${{AAD_APP_CLIENT_ID}}
+      REACT_APP_START_LOGIN_PAGE_URL: ${{TAB_ENDPOINT}}/auth-start.html
+      REACT_APP_FUNC_NAME: getUserProfile
+      REACT_APP_FUNC_ENDPOINT: ${{API_FUNCTION_ENDPOINT}}
+{{{azureStorageDeploy}}}
+{{#cliRunNpmCommand}} install, workingDirectory: api {{/cliRunNpmCommand}}
+{{#cliRunNpmCommand}} build, workingDirectory: api {{/cliRunNpmCommand}}
+{{#devToolInstall}} dotnet {{/devToolInstall}}
+  - uses: cli/runDotnetCommand
+    with:
+      workingDirectory: api
+      args: build extensions.csproj -o bin --ignore-failed-sources
+      execPath: ${{DOTNET_PATH}}
+{{#azureFunctionsZipDeploy}} workingDirectory: api, resourceId: ${{API_FUNCTION_RESOURCE_ID}} {{/azureFunctionsZipDeploy}}
+
+# Triggered when 'teamsfx publish' is executed
+publish:
+{{{teamsAppValidateManifest}}}
+{{{teamsAppZipAppPackage}}}
+{{{teamsAppValidateAppPackage}}}
+{{{teamsAppUpdate}}}
+{{{teamsAppPublishAppPackage}}}

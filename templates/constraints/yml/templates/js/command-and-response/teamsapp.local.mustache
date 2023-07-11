@@ -1,0 +1,29 @@
+{{{header}}}
+
+provision:
+{{{teamsAppCreate}}}
+
+{{{botAadAppCreate}}}
+
+{{{botFrameworkCreate}}}
+
+{{{teamsAppValidateManifest}}}
+
+{{{teamsAppZipAppPackage}}}
+{{{teamsAppValidateAppPackage}}}
+
+{{{teamsAppUpdate}}}
+
+deploy:
+  # Run npm command
+  - uses: cli/runNpmCommand
+    with:
+      args: install --no-audit
+
+  # Generate runtime environment variables
+  - uses: file/createOrUpdateEnvironmentFile
+    with:
+      target: ./.localConfigs
+      envs:
+        BOT_ID: ${{BOT_ID}}
+        BOT_PASSWORD: ${{SECRET_BOT_PASSWORD}}
