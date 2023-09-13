@@ -123,7 +123,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       "@microsoft/teams-manifest":
-        specifier: ^0.2.0
+        specifier: ^0.2.1
         version: link:../manifest
       axios:
         specifier: ^0.21.2
@@ -259,10 +259,10 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
       "@microsoft/teamsfx-api":
-        specifier: ^0.23.0
+        specifier: ^0.23.1
         version: link:../api
       "@microsoft/teamsfx-core":
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: link:../fx-core
       ansi-escapes:
         specifier: ^4.3.2
@@ -327,7 +327,7 @@ importers:
         specifier: ^1.0.1
         version: 1.0.2(nyc@15.1.0)
       "@microsoft/metrics-ts":
-        specifier: ^0.0.5
+        specifier: ^0.0.6
         version: link:../metrics-ts
       "@types/chai":
         specifier: ^4.2.14
@@ -568,7 +568,7 @@ importers:
         specifier: ~1.0.7360
         version: 1.0.7360
       "@microsoft/teamsfx-api":
-        specifier: ^0.23.0
+        specifier: ^0.23.1
         version: link:../api
       "@npmcli/arborist":
         specifier: ^4.2.0
@@ -1102,7 +1102,7 @@ importers:
         specifier: ^1.14.6
         version: 1.17.3
       "@microsoft/adaptivecards-tools":
-        specifier: ^1.4.0
+        specifier: ^1.4.1
         version: link:../adaptivecards-tools-sdk
       "@microsoft/microsoft-graph-client":
         specifier: ^3.0.6
@@ -1506,10 +1506,10 @@ importers:
         specifier: ~1.0.7360
         version: 1.0.7360
       "@microsoft/teamsfx-api":
-        specifier: ^0.23.0
+        specifier: ^0.23.1
         version: link:../api
       "@microsoft/teamsfx-core":
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: link:../fx-core
       fs-extra:
         specifier: ^9.1.0
@@ -1721,10 +1721,10 @@ importers:
         specifier: 1.17.3
         version: 1.17.3
       "@microsoft/teamsfx-api":
-        specifier: ^0.23.0
+        specifier: ^0.23.1
         version: link:../api
       "@microsoft/teamsfx-cli":
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: link:../cli
       "@types/semver":
         specifier: ^7.3.8
@@ -1780,7 +1780,7 @@ importers:
         specifier: 0.0.1
         version: 0.0.1(mocha@10.2.0)(mochawesome@7.0.1)
       "@microsoft/teamsfx-core":
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: link:../fx-core
       "@types/chai":
         specifier: ^4.2.19
@@ -1930,10 +1930,10 @@ importers:
         specifier: ~3.11.1
         version: 3.11.1
       "@microsoft/teamsfx-api":
-        specifier: ^0.23.0
+        specifier: ^0.23.1
         version: link:../api
       "@microsoft/teamsfx-core":
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: link:../fx-core
       "@npmcli/package-json":
         specifier: ^1.0.1
