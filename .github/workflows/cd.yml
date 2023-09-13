@@ -62,22 +62,6 @@ jobs:
           git config --global user.name 'zhihuan'
           git config --global user.email 'zhihuan@microsoft.com'
 
-      - name: release alpha npm packages to npmjs.org
-        run: |
-          npx lerna version prerelease --preid=alpha.$(git rev-parse --short HEAD) --exact --no-push --allow-branch dev --yes
-
-      - name: release beta packages to npmjs.org
-        run: |
-          npx lerna version prerelease --preid=beta.$(date "+%Y%m%d%H") --exact --no-push --allow-branch ${GITHUB_REF#refs/*/} --yes
-
-      - name: version rc npm packages to npmjs.org
-        run: |
-          npx lerna version prerelease --conventional-prerelease --preid=rc --no-changelog --yes
-
-      - name: version rc npm packages to npmjs.org on hotfix
-        run: |
-          npx lerna version prerelease --conventional-prerelease --preid=rc-hotfix --no-changelog --allow-branch ${GITHUB_REF#refs/*/} --yes
-
       - name: version stable npm packages to npmjs.org
         run: |
           npx lerna version --conventional-commits --conventional-graduate --no-changelog --allow-branch ${GITHUB_REF#refs/*/} --yes
