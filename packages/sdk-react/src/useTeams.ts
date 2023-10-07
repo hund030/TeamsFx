@@ -48,14 +48,14 @@ export function useTeams(options?: {
   const [inTeams, setInTeams] = useState<boolean | undefined>(undefined);
   const [fullScreen, setFullScreen] = useState<boolean | undefined>(undefined);
   const [theme, setTheme] = useState<Theme>(teamsLightTheme);
-  const [themeString, setThemeString] = useState<string>("default");
+  const [themeString, setThemeString] = useState<string>("dark");
   const [initialTheme] = useState<string | undefined>(
     options && options.initialTheme ? options.initialTheme : getTheme()
   );
   const [context, setContext] = useState<app.Context | undefined>(undefined);
 
   const themeChangeHandler = (theme: string | undefined) => {
-    setThemeString(theme || "default");
+    setThemeString(theme || "dark");
     switch (theme) {
       case "dark":
         setTheme(teamsDarkTheme);
