@@ -62,6 +62,10 @@ function updateFileDeps(file, deps) {
             }
         }
     }
+
+    pkg_.name = pkg_.name + version;
+    fileChange = true;
+
     if (fileChange) {
         pkg_.dependencies = dep_;
         fse.writeFileSync(file, JSON.stringify(pkg_, null, 4));
