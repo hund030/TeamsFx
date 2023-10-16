@@ -63,7 +63,7 @@ function updateFileDeps(file, deps) {
         }
     }
 
-    pkg_.name = pkg_.name + version;
+    pkg_.name = pkg_.name + "-template";
     fileChange = true;
 
     if (fileChange) {
