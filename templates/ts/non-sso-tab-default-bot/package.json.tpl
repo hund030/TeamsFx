@@ -1,5 +1,5 @@
 {
-    "name": "{{SafeProjectNameLowerCase}}-template-template",
+    "name": "{{SafeProjectNameLowerCase}}-template-template-template",
     "version": "0.0.1",
     "engines": {
         "node": "16 || 18"

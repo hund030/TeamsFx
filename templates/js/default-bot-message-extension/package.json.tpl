@@ -1,5 +1,5 @@
 {
-    "name": "{{SafeProjectNameLowerCase}}-template-template",
+    "name": "{{SafeProjectNameLowerCase}}-template-template-template",
     "version": "1.0.0",
     "msteams": {
         "teamsAppId": null
