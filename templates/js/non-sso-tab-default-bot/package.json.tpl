@@ -1,5 +1,5 @@
 {
-    "name": "{{SafeProjectNameLowerCase}}",
+    "name": "{{SafeProjectNameLowerCase}}-template",
     "version": "0.0.1",
     "engines": {
         "node": "16 || 18"
@@ -17,6 +17,5 @@
     },
     "dependencies": {
         "concurrently": "^7.6.0"
-    },
-    "license": "MIT"
+    }
 }

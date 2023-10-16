@@ -1,8 +1,8 @@
 {
-    "name": "{{SafeProjectNameLowerCase}}",
+    "name": "{{SafeProjectNameLowerCase}}-template",
     "version": "1.0.0",
     "msteams": {
-      "teamsAppId": null
+        "teamsAppId": null
     },
     "description": "Microsoft Teams Toolkit hello world Bot sample",
     "engines": {
