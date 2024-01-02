@@ -1,6 +1,6 @@
 {
     "name": "templates",
-    "version": "4.2.0-alpha",
+    "version": "4.2.0",
     "private": "true",
     "license": "MIT",
     "scripts": {
@@ -11,6 +11,7 @@
         "watch": "node ./scripts/watch.js",
         "init": "node ./scripts/yamlSolver init",
         "build": "node ./scripts/generateZip.js && node ./scripts/distributeZip.js",
+        "preversion": "node ./scripts/preversion.js $npm_package_version",
         "version": "bash ../.github/scripts/pkg-version.sh template-sync && bash ../.github/scripts/pkg-version.sh core-template",
         "postversion": "npm run build"
     },
