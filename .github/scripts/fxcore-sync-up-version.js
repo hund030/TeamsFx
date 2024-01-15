@@ -32,10 +32,6 @@ if (!semver.prerelease(templateVersion)) {
     templateConfigFile.version = templateVersionRange;
   }
   templateConfigFile.useLocalTemplate = false;
-} else if (templateVersion.includes("rc")) {
-  console.log("sync up template in fx-core as 0.0.0-rc");
-  templateConfigFile.version = "0.0.0-rc";
-  templateConfigFile.useLocalTemplate = false;
 } else {
   console.log("configure fx-core useLocalTemplate as true");
   templateConfigFile.useLocalTemplate = true;
