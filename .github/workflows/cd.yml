@@ -19,6 +19,11 @@ on:
         type: string
         required: false
         description: "Please enter the package names you want to publish, such as cli, vscode, ui, sdk, server and template. Please separate multiple entries with spaces"
+      release-templates:
+        type: string
+        description: "whether release templates to github, 'yes' when release hotfix, otherwise 'no'"
+        required: false
+        default: "no"
   schedule:
     - cron: "0 16 * * *"
 
@@ -131,14 +136,14 @@ jobs:
 
       - name: update template rc tag
         uses: richardsimko/update-tag@v1.0.7
-        if: ${{ (contains(steps.version-change.outputs.CHANGED, 'templates@') || contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx')) && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' }}
+        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' && github.event.inputs.release-templates == 'yes' }}
         with:
           tag_name: "templates@0.0.0-rc"
         env:
           GITHUB_TOKEN: ${{ secrets.CD_PAT }}
 
       - name: release templates' RC version to github
-        if: ${{ (contains(steps.version-change.outputs.CHANGED, 'templates@') || contains(steps.version-change.outputs.CHANGED, '@microsoft/teamsfx')) && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' }}
+        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'rc' && github.event.inputs.release-templates == 'yes' }}
         uses: ncipollo/release-action@v1.10.0
         with:
           token: ${{ secrets.CD_PAT }}
@@ -149,7 +154,7 @@ jobs:
           removeArtifacts: true
 
       - name: Create Templates Stable Release
-        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' }}
+        if: ${{ contains(steps.version-change.outputs.CHANGED, 'templates@') && github.event_name == 'workflow_dispatch' && github.event.inputs.preid == 'stable' && github.event.inputs.release-templates == 'yes' }}
         uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: ${{ github.workspace }}/templates/build/*.zip
