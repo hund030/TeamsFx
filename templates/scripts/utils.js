@@ -44,6 +44,35 @@ function parseToken(tokens, view, tags) {
   }
 }
 
+function extractRenderVariables(template) {
+  let variables = [{}];
+  const regex = /([\{]+)([^{}}]+)([\}]+)/g;
+  let match;
+
+  while ((match = regex.exec(template)) !== null) {
+    const variable = match[2].replace(/[#^\/]/g, "");
+
+    if (variable !== match[2]) {
+      if (!variables.some((v) => v[variable])) {
+        variables = [
+          ...variables.map((v) => {
+            return { ...v, [variable]: true };
+          }),
+          ...variables.map((v) => {
+            return { ...v, [variable]: false };
+          }),
+        ];
+      }
+    } else {
+      variables = variables.map((v) => {
+        return { ...v, [variable]: "PLACEHOLDER" };
+      });
+    }
+  }
+
+  return variables;
+}
+
 function escapeEmptyVariable(template, view, tags = ["{{", "}}"]) {
   const parsed = Mustache.parse(template, tags);
   let tokens = JSON.parse(JSON.stringify(parsed)); // deep copy
@@ -67,4 +96,5 @@ module.exports = {
   filterMustacheFiles,
   renderMustache,
   writeFileSafe,
+  extractRenderVariables,
 };

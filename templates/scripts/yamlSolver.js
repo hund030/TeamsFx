@@ -5,6 +5,7 @@ const { Ext, Path, RegExps } = require("./constants");
 const yaml = require("js-yaml");
 const os = require("os");
 const { exit } = require("node:process");
+const Ajv = require("ajv");
 
 // The solver is called by the following command:
 // > node yamlSolver.js <command> <constraintFilePath>
@@ -18,6 +19,7 @@ const Command = {
   VERIFY: "verify",
   INIT: "init",
   UPGRADE: "upgrade-schema",
+  VALIDATE: "validate",
 };
 
 // The constraints are defined in mustache files.
@@ -114,7 +116,8 @@ function addLifecycle(header, actions) {
 }
 
 function generateConstraintFromSolution(ymlString, options) {
-  const yml = yaml.load(ymlString.replace(/{{appName}}/g, "appName"));
+  const yml = yaml.load(utils.renderMustache(ymlString.replace(/{{appName}}/g, "appName"), {}));
+
   const isLocal = options.isLocal;
 
   const header = `{{#header}} version: 1.0.0 {{/header}}` + os.EOL;
@@ -197,6 +200,9 @@ class YamlSolver {
       case Command.UPGRADE:
         this.upgrade();
         break;
+      case Command.VALIDATE:
+        this.validate();
+        break;
     }
   }
 
@@ -241,10 +247,14 @@ class YamlSolver {
       if (existsSync(mustachePath)) {
         return;
       }
-      const constraint = generateConstraintFromSolution(readFileSync(file, "utf8"), {
-        isLocal: path.basename(file).includes("local"),
-      });
-      utils.writeFileSafe(mustachePath, constraint);
+      try {
+        const constraint = generateConstraintFromSolution(readFileSync(file, "utf8"), {
+          isLocal: path.basename(file).includes("local"),
+        });
+        utils.writeFileSafe(mustachePath, constraint);
+      } catch (e) {
+        console.error(`Failed to init ${file}`);
+      }
     });
   }
 
@@ -258,6 +268,36 @@ class YamlSolver {
       );
       utils.writeFileSafe(file, newContent);
     });
+  }
+
+  validate() {
+    const invalidFiles = [];
+    this.ymlPaths.map((file) => {
+      const tplData = readFileSync(file, "utf8");
+      const schemaVersion = tplData.match(RegExps.SchemaVersion);
+      if (!schemaVersion) {
+        console.error(`Schema version is missing in ${file}`);
+      }
+      const schema = JSON.parse(
+        readFileSync(path.join(Path.YmlSchema, schemaVersion[2], "yaml.schema.json"))
+      );
+      const validator = new Ajv({ allowUnionTypes: true }).compile(schema);
+
+      const variables = utils.extractRenderVariables(tplData);
+      variables.forEach((v) => {
+        const res = utils.renderMustache(tplData, v);
+        const ymlData = yaml.load(res);
+
+        if (!validator(ymlData) && !invalidFiles.find((f) => f === file)) {
+          invalidFiles.push(file);
+        }
+      });
+    });
+    if (invalidFiles.length > 0) {
+      console.error(`Schema Validation failed in:\n${invalidFiles.join("\n")}`);
+      exit(-1);
+    }
+    console.log("Schema Validation passed");
   }
 }
 
@@ -289,7 +329,7 @@ function validateCommand(command) {
 
 function parseInput() {
   const command = validateCommand(process.argv[2]);
-  if (command === Command.INIT) {
+  if (command === Command.INIT || command === Command.VALIDATE) {
     return {
       command,
       solutionsPath: utils.filterYmlFiles(path.resolve(process.argv[3])),

@@ -11,6 +11,7 @@ const Path = {
   YmlConstraints: resolve(__dirname, "..", "constraints", "yml", "templates"),
   YmlSnippets: resolve(__dirname, "..", "constraints", "yml", "actions"),
   Solution: resolve(__dirname, ".."),
+  YmlSchema: resolve(__dirname, "..", "..", "packages", "fx-core", "resource", "yaml-schema"),
 };
 
 const RegExps = {
